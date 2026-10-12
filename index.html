@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="it">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,42 +8,43 @@
 <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
 <style>
 body{margin:0;overflow:hidden;font-family:Arial,sans-serif;}
-#coupon-card{display:none;position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:90%;max-width:420px;background:#111;color:#fff;padding:30px;border-radius:20px;box-shadow:0 20px 50px rgba(0,0,0,.5);z-index:9999;text-align:center;}
-#coupon-card h2{color:#d4af37;margin-top:0;}
-#coupon-card input{width:100%;padding:12px;margin-bottom:12px;border:none;border-radius:8px;box-sizing:border-box;}
-#coupon-card button{width:100%;background:#d4af37;border:none;padding:14px;border-radius:10px;font-weight:bold;cursor:pointer;}
-#close{position:absolute;top:10px;right:15px;cursor:pointer;font-size:22px;}
+#card1,#card2{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:90%;max-width:700px;background:rgba(10,10,10,.96);color:#fff;padding:40px;border-radius:24px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.5);z-index:9999;}
+#card1{display:none;}#card2{display:none;}
+input{width:100%;padding:16px;margin-bottom:15px;border:none;border-radius:10px;box-sizing:border-box;}
+button{background:linear-gradient(135deg,#D4AF37,#B8860B);color:#111;border:none;padding:18px 40px;border-radius:12px;font-size:20px;font-weight:bold;cursor:pointer;width:100%;}
 </style>
 </head>
 <body>
-<div id="coupon-card">
-<div id="close">×</div>
-<h2>☕ Hai aperto una finestra con noi</h2>
-<p>Ricevi il codice del tuo caffè omaggio.</p>
+<div id="card1">
+<h1>Complimenti!</h1>
+<p style="font-size:28px">Hai aperto una finestra con noi.</p>
+<div style="font-size:60px">☕</div>
+<p style="font-size:24px">Un caffè omaggio ti aspetta.</p>
+<button id="ricevi-codice">RICEVI IL TUO CODICE</button>
+</div>
+<div id="card2">
+<h2 style="color:#D4AF37">☕</h2>
+<h3>Ricevi il tuo caffè omaggio</h3>
+<p>Inserisci i tuoi dati per ottenere il codice univoco.</p>
 <input id="nome" type="text" placeholder="Nome">
 <input id="email" type="email" placeholder="E-mail">
-<button id="premio-btn">OTTIENI IL CODICE</button>
+<label><input id="privacy" type="checkbox"> Acconsento al trattamento dei dati personali</label><br><br>
+<button id="genera-codice">OTTIENI IL CODICE</button>
 </div>
 <a-scene mindar-image="imageTargetSrc: targets.mind;" color-space="sRGB" vr-mode-ui="enabled:false" device-orientation-permission-ui="enabled:false">
 <a-camera position="0 0 0" look-controls="enabled:false"></a-camera>
 <a-entity id="target" mindar-image-target="targetIndex:0">
 <a-plane position="0 0 0" width="1.8" height="1" opacity="0.95" color="#111111"></a-plane>
-<a-text value="☕" align="center" color="#D4AF37" position="0 0.30 0.01" width="3"></a-text>
-<a-text value="Hai aperto una finestra con noi" align="center" color="#FFFFFF" position="0 0.10 0.01" width="3"></a-text>
-<a-text value="Caffe omaggio" align="center" color="#D4AF37" position="0 -0.10 0.01" width="3"></a-text>
-<a-text value="Compila il modulo" align="center" color="#FFFFFF" position="0 -0.30 0.01" width="2"></a-text>
+<a-text value="☕" align="center" color="#D4AF37" position="0 0.3 0.01" width="3"></a-text>
+<a-text value="Hai aperto una finestra con noi" align="center" color="#FFF" position="0 0.1 0.01" width="3"></a-text>
+<a-text value="Caffe omaggio" align="center" color="#D4AF37" position="0 -0.1 0.01" width="3"></a-text>
 </a-entity>
 </a-scene>
 <script>
 const target=document.querySelector('#target');
-const card=document.querySelector('#coupon-card');
-target.addEventListener('targetFound',()=>{card.style.display='block';});
-target.addEventListener('targetLost',()=>{});
-document.getElementById('close').addEventListener('click',()=>{card.style.display='none';});
-document.getElementById('premio-btn').addEventListener('click',()=>{
- const codice='MEL-CAFE-'+Math.floor(1000+Math.random()*9000);
- alert('Il tuo codice: '+codice);
-});
+target.addEventListener('targetFound',()=>{document.getElementById('card1').style.display='block';});
+document.getElementById('ricevi-codice').addEventListener('click',()=>{document.getElementById('card1').style.display='none';document.getElementById('card2').style.display='block';});
+document.getElementById('genera-codice').addEventListener('click',()=>{const codice='MEL-CAFE-'+Math.floor(1000+Math.random()*9000);alert('Il tuo codice: '+codice);});
 </script>
 </body>
 </html>
