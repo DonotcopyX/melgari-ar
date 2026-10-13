@@ -9,8 +9,24 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 body{margin:0;overflow:hidden;font-family:Arial,sans-serif}
-#card1,#card2,#card3{display:none;position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:9999}
-#card1 img{width:90vw;max-width:540px;border-radius:24px;display:block}
+#card1{
+    display:none;
+    position:fixed;
+    left:50%;
+    top:50%;
+    transform:translate(-50%,-50%);
+    z-index:9999;
+    text-align:center;
+}
+#card1 img{
+    width:70vw;
+    max-width:380px;
+    max-height:70vh;
+    object-fit:contain;
+    border-radius:24px;
+    display:block;
+    margin:auto;
+}
 #card2,#card3{width:90%;max-width:500px;background:#111;color:#fff;padding:30px;border-radius:24px;box-shadow:0 20px 60px rgba(0,0,0,.5)}
 input{width:100%;padding:14px;margin:10px 0;border:none;border-radius:10px;box-sizing:border-box}
 button{background:linear-gradient(135deg,#D4AF37,#B8860B);color:#111;border:none;padding:16px 24px;border-radius:12px;font-weight:bold;cursor:pointer;width:100%;margin-top:10px}
