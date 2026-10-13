@@ -5,7 +5,53 @@
 <script src='https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js'></script>
 <script src='https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js'></script>
 <style>body{margin:0;font-family:Arial}#card1,#card2,#card3{display:none;position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:9999}#card2,#card3{width:90%;max-width:500px;background:#111;color:#fff;padding:30px;border-radius:24px}button{width:100%;padding:16px;margin-top:10px}input{width:100%;padding:12px;margin:8px 0;box-sizing:border-box}#qrcode{text-align:center}
+#coupon{
+    background:#fff;
+    color:#111;
+    border-radius:30px;
+    padding:25px;
+    text-align:center;
+}
 
+.logo-melgari{
+    display:block;
+    width:220px;
+    max-width:90%;
+    margin:0 auto 15px auto;
+}
+
+.partner-box{
+    background:#f7f7f7;
+    border-radius:18px;
+    padding:15px;
+    margin:20px 0;
+}
+
+.partner-label{
+    font-size:12px;
+    color:#777;
+    margin-bottom:10px;
+}
+
+.logo-bar{
+    width:140px;
+    max-width:90%;
+    display:block;
+    margin:0 auto;
+}
+
+#clienteNome{
+    font-size:24px;
+    font-weight:bold;
+    margin:10px 0 20px 0;
+}
+
+#codice{
+    font-size:22px;
+    font-weight:bold;
+    letter-spacing:2px;
+    margin-top:15px;
+}
 </style></head><body>
 <div id='card1'><img src='Card1.png' style='max-width:380px;width:70vw'><button id='ricevi-codice'>RICEVI IL TUO CODICE</button></div>
 <div id='card2'><h2>☕ Ricevi il tuo caffè omaggio</h2><input id='nome' placeholder='Nome'><input id='email' type='email' placeholder='E-mail'><button id='genera-codice'>OTTIENI IL CODICE</button><div id='debug'></div></div>
@@ -28,7 +74,24 @@
 
         <div id="clienteNome">
             Cliente
-        </div><br>
+        </div>
+		
+		<div class="partner-box">
+
+    <div class="partner-label">
+        Partner convenzionato
+    </div>
+
+    <img
+        src="logo-bar.png"
+        alt="Caffetteria al 41"
+        class="logo-bar">
+
+</div>
+		
+		
+		
+		<br>
 <div class="partner-box">
 
     <div class="partner-label">
@@ -62,7 +125,7 @@ const supabaseClient=supabase.createClient('https://kqxcdochhnxulbpjvamp.supabas
 document.getElementById('target').addEventListener('targetFound',()=>{document.getElementById('card1').style.display='block'});
 document.getElementById('ricevi-codice').onclick=()=>{document.getElementById('card1').style.display='none';document.getElementById('card2').style.display='block'};
 document.getElementById('genera-codice').onclick=async()=>{try{const nome=document.getElementById('nome').value.trim();const email=document.getElementById('email').value.trim();if(!nome||!email){alert('Compila tutti i campi');return;}const codice='MEL-CAFE-'+Math.random().toString(36).substring(2,8).toUpperCase();const {data,error}=await supabaseClient.from('Coupons').insert([{nome,email,codice,usato:false}]).select();if(error){alert(error.message);return;}document.getElementById('codice').innerText = codice;
-document.getElementById('clienteNome').innerText = nome;document.getElementById('qrcode').innerHTML='';new QRCode(document.getElementById('qrcode'),{text:'https://donotcopyx.github.io/melgari-ar/verifica.html?id='+data[0].id,width:220,height:220});document.getElementById('card2').style.display='none';document.getElementById('card3').style.display='block';}catch(e){alert(e.message)}};
+document.getElementById('clienteNome').innerText = nome;document.getElementById('qrcode').innerHTML='';new QRCode(document.getElementById('qrcode'),{text:'https://donotcopyx.github.io/melgari-ar/verifica.html?id='+data[0].id,width:260,height:260});document.getElementById('card2').style.display='none';document.getElementById('card3').style.display='block';}catch(e){alert(e.message)}};
 document.getElementById('salvaCoupon').onclick=async()=>{const c=await html2canvas(document.getElementById('coupon'));const a=document.createElement('a');a.download='coupon-melgari.png';a.href=c.toDataURL();a.click();};
 document.getElementById('chiudi').onclick=()=>{document.getElementById('card3').style.display='none'};
 </script></body></html>
