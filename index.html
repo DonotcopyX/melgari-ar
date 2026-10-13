@@ -7,7 +7,31 @@
 <style>body{margin:0;font-family:Arial}#card1,#card2,#card3{display:none;position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:9999}#card2,#card3{width:90%;max-width:500px;background:#111;color:#fff;padding:30px;border-radius:24px}button{width:100%;padding:16px;margin-top:10px}input{width:100%;padding:12px;margin:8px 0;box-sizing:border-box}#qrcode{text-align:center}</style></head><body>
 <div id='card1'><img src='Card1.png' style='max-width:380px;width:70vw'><button id='ricevi-codice'>RICEVI IL TUO CODICE</button></div>
 <div id='card2'><h2>☕ Ricevi il tuo caffè omaggio</h2><input id='nome' placeholder='Nome'><input id='email' type='email' placeholder='E-mail'><button id='genera-codice'>OTTIENI IL CODICE</button><div id='debug'></div></div>
-<div id='card3'><div id='coupon'><h2>☕ CAFFÈ OMAGGIO</h2><div id='codice'></div><div id='qrcode'></div></div><button id='salvaCoupon'>SALVA IN GALLERIA</button><button id='chiudi'>CHIUDI</button></div>
+<div id='card3'>
+	<div id="coupon">
+
+    <img
+        src="logo-melgari.png"
+        alt="Melgari"
+        class="logo-melgari">
+
+    <h2>☕ CAFFÈ OMAGGIO</h2>
+
+    <div class="cliente-label">
+        Voucher riservato a
+    </div>
+
+    <div id="clienteNome">
+        Cliente
+    </div>
+
+    <div id="codice"></div>
+
+    <div id="qrcode"></div>
+
+</div>
+	
+	
 <a-scene mindar-image='imageTargetSrc: targets.mind;' vr-mode-ui='enabled:false'><a-camera></a-camera><a-entity id='target' mindar-image-target='targetIndex:0'></a-entity></a-scene>
 <script>
 const supabaseClient=supabase.createClient('https://kqxcdochhnxulbpjvamp.supabase.co','sb_publishable_aGUxyPy0IiCTyRyHXkXoYw_wWjN6VaL');
