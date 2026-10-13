@@ -21,8 +21,8 @@ const target=document.getElementById('target');
 target.addEventListener('targetFound',()=>document.getElementById('card1').style.display='block');
 document.getElementById('ricevi-codice').onclick=()=>{card1.style.display='none';card2.style.display='block';};
 document.getElementById('genera-codice').onclick=async()=>{
-const nome=nome.value?.trim()||document.getElementById('nome').value.trim();
-const email=document.getElementById('email').value.trim();
+const nome = document.getElementById('nome').value.trim();
+const email = document.getElementById('email').value.trim();
 if(!nome||!email)return alert('Compila tutti i campi');
 const codice='MEL-CAFE-'+Math.random().toString(36).substring(2,8).toUpperCase();
 const result=await supabaseClient.from('Coupons').insert([{nome,email,codice,usato:false}]).select().single();
