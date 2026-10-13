@@ -14,6 +14,28 @@ const supabaseClient=supabase.createClient('https://kqxcdochhnxulbpjvamp.supabas
 document.getElementById('target').addEventListener('targetFound',()=>{document.getElementById('card1').style.display='block'});
 document.getElementById('ricevi-codice').onclick=()=>{document.getElementById('card1').style.display='none';document.getElementById('card2').style.display='block'};
 document.getElementById('genera-codice').onclick=async()=>{try{const nome=document.getElementById('nome').value.trim();const email=document.getElementById('email').value.trim();if(!nome||!email){alert('Compila tutti i campi');return;}const codice='MEL-CAFE-'+Math.random().toString(36).substring(2,8).toUpperCase();const {data,error}=await supabaseClient.from('Coupons').insert([{nome,email,codice,usato:false}]).select();if(error){alert(error.message);return;}document.getElementById('codice').innerText=codice;document.getElementById('qrcode').innerHTML='';new QRCode(document.getElementById('qrcode'),{text:'https://donotcopyx.github.io/melgari-ar/verifica.html?id='+data[0].id,width:220,height:220});document.getElementById('card2').style.display='none';document.getElementById('card3').style.display='block';}catch(e){alert(e.message)}};
-document.getElementById('salvaCoupon').onclick=async()=>{const c=await html2canvas(document.getElementById('coupon'));const a=document.createElement('a');a.download='coupon-melgari.png';a.href=c.toDataURL();a.click();};
+
+document.getElementById('salvaCoupon').onclick = async () => {
+
+    const canvas = await html2canvas(
+        document.getElementById('coupon'),
+        {
+            backgroundColor:'#ffffff',
+            scale:2
+        }
+    );
+
+    const image = canvas.toDataURL('image/png');
+
+    const win = window.open();
+
+    win.document.write(
+        '<img src=   image +
+        ''
+    );
+
+};
+
+	
 document.getElementById('chiudi').onclick=()=>{document.getElementById('card3').style.display='none'};
 </script></body></html>
