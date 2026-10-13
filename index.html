@@ -53,7 +53,18 @@ const email=document.getElementById('email').value.trim();
 if(!nome||!email){alert('Compila tutti i campi');return;}
 const codice='MEL-CAFE-'+Math.random().toString(36).substring(2,8).toUpperCase();
 const {error}=await supabaseClient.from('coupons').insert([{nome,email,codice,usato:false}]);
-if(error){alert('Errore database');console.log(error);return;}
+if(error){
+
+  console.log(error);
+
+  alert(
+    error.message +
+    "\\n" +
+    error.code
+  );
+
+  return;
+}
 document.getElementById('codice').innerText=codice;
 card2.style.display='none';card3.style.display='block';
 };
