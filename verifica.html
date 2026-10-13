@@ -3,11 +3,11 @@ const s=supabase.createClient('https://kqxcdochhnxulbpjvamp.supabase.co','sb_pub
 (async()=>{const id=new URLSearchParams(location.search).get('id');const box=document.getElementById('c');const {data,error}=await s.from('Coupons').select('*').eq('id',id).single();
 		// legge il plafond
 
-const { data: promo } = await s
-    .from('Promo')
-    .select('*')
-    .eq('id', 1)
-    .single();<br>
+const { data: promo, error: promoError } = await s
+.from('Promo')
+.select('*')
+.eq('id',1)
+.single();
 <br>
 if(error || !data){
     box.innerHTML = '❌ COUPON NON VALIDO';
