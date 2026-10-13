@@ -1,82 +1,159 @@
-<!DOCTYPE html><html lang='it'><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width,initial-scale=1'><title>Verifica</title><script src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2'></script></head><body style='font-family:Arial;background:#111;color:#fff;display:flex;justify-content:center;align-items:center;min-height:100vh'><div id='c'>Verifica...</div><script>
-const s=supabase.createClient('https://kqxcdochhnxulbpjvamp.supabase.co','sb_publishable_aGUxyPy0IiCTyRyHXkXoYw_wWjN6VaL');
-(async()=>{const id=new URLSearchParams(location.search).get('id');const box=document.getElementById('c');const {data,error}=await s.from('Coupons').select('*').eq('id',id).single();
-		// legge il plafond
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verifica Coupon</title>
 
-const { data: promo, error: promoError } = await s
-.from('Promo')
-.select('*')
-.eq('id',1)
-.single();
-<br>
-if(error || !data){
-    box.innerHTML = '❌ COUPON NON VALIDO';
-    return;
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:#111;
+    color:#fff;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    min-height:100vh;
 }
 
-// conta i coupon utilizzati
+#c{
+    max-width:500px;
+    width:90%;
+    background:#1b1b1b;
+    border-radius:20px;
+    padding:30px;
+    text-align:center;
+}
 
-const { count } = await s
-    .from('Coupons')
-    .select('*', {
-        count: 'exact',
-        head: true
-    })
-    .eq('usato', true);
+button{
+    width:100%;
+    padding:16px;
+    border:none;
+    border-radius:12px;
+    background:#D4AF37;
+    color:#111;
+    font-weight:bold;
+    font-size:18px;
+    cursor:pointer;
+}
+</style>
+</head>
+<body>
 
-const plafond = promo.plafond;
-const residui = plafond - count;   
-		   
-		   if(data.usato){
+<div id="c">Verifica...</div>
+
+<script>
+
+const s = supabase.createClient(
+    'https://kqxcdochhnxulbpjvamp.supabase.co',
+    'sb_publishable_aGUxyPy0IiCTyRyHXkXoYw_wWjN6VaL'
+);
+
+(async () => {
+
+    const id = new URLSearchParams(location.search).get('id');
+    const box = document.getElementById('c');
+
+    const { data, error } = await s
+        .from('Coupons')
+        .select('*')
+        .eq('id', id)
+        .single();
+
+    if (error || !data) {
+        box.innerHTML = '❌ COUPON NON VALIDO';
+        return;
+    }
+
+    const { data: promo, error: promoError } = await s
+        .from('Promo')
+        .select('*')
+        .eq('id', 1)
+        .single();
+
+    if (promoError || !promo) {
+        box.innerHTML = '❌ ERRORE PROMO';
+        return;
+    }
+
+    const { count } = await s
+        .from('Coupons')
+        .select('*', {
+            count: 'exact',
+            head: true
+        })
+        .eq('usato', true);
+
+    const plafond = promo.plafond;
+    const residui = plafond - count;
+
+    if (data.usato) {
+
+        box.innerHTML = `
+            <h1>🔴 COUPON GIÀ UTILIZZATO</h1>
+
+            <p>Erogati: ${count} / ${plafond}</p>
+
+            <p>Residui: ${residui}</p>
+        `;
+
+        return;
+    }
+
+    if (count >= plafond) {
+
+        box.innerHTML = `
+            <h1>⛔ PROMO TERMINATA</h1>
+
+            <h2>${count} / ${plafond}</h2>
+
+            <p>Tutti i caffè disponibili sono stati erogati.</p>
+        `;
+
+        return;
+    }
 
     box.innerHTML = `
-        <h1>🔴 COUPON GIÀ UTILIZZATO</h1>
+        <h1>✅ COUPON VALIDO</h1>
 
-        <p>
-        Erogati: ${count} / ${plafond}
-        </p>
+        <p>Erogati: ${count} / ${plafond}</p>
 
-        <p>
-        Residui: ${residui}
-        </p>
+        <p>Residui: ${residui}</p>
+
+        <button id="ok">
+            CONVALIDA
+        </button>
     `;
 
-    return;
-}
-		   
-		   if(count >= plafond){
+    document.getElementById('ok').onclick = async () => {
 
-    box.innerHTML = `
-        <h1>⛔ PROMO TERMINATA</h1>
+        const r = await s
+            .from('Coupons')
+            .update({
+                usato: true
+            })
+            .eq('id', id);
 
-        <h2>
-        ${count} / ${plafond}
-        </h2>
+        if (r.error) {
+            alert(r.error.message);
+            return;
+        }
 
-        <p>
-        Tutti i caffè disponibili sono stati erogati.
-        </p>
-    `;
+        box.innerHTML = `
+            <h1>✅ COUPON ACCETTATO</h1>
 
-    return;
-}
-		   
-		  box.innerHTML = `
+            <p>
+                Caffè contabilizzato correttamente.
+            </p>
+        `;
+    };
 
-<h1>✅ COUPON VALIDO</h1>
+})();
 
-<p>
-Erogati: ${count} / ${plafond}
-</p>
+</script>
 
-<p>
-Residui: ${residui}
-</p>
-
-<button id="ok">
-CONVALIDA
-</button>
-
-`;<br>
-document.getElementById('ok').onclick=async()=>{const r=await s.from('Coupons').update({usato:true}).eq('id',id);if(r.error){alert(r.error.message);return;}box.innerHTML='✅ COUPON ACCETTATO';};})();
-</script></body></html>
+</body>
+</html>
