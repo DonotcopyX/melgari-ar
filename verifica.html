@@ -72,5 +72,6 @@ Residui: ${residui}
 CONVALIDA
 </button>
 
-`;`;document.getElementById('ok').onclick=async()=>{const r=await s.from('Coupons').update({usato:true}).eq('id',id);if(r.error){alert(r.error.message);return;}box.innerHTML='✅ COUPON ACCETTATO';};})();
+`;<br>
+document.getElementById('ok').onclick=async()=>{const r=await s.from('Coupons').update({usato:true}).eq('id',id);if(r.error){alert(r.error.message);return;}box.innerHTML='✅ COUPON ACCETTATO';};})();
 </script></body></html>
