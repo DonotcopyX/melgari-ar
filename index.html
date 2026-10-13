@@ -6,70 +6,57 @@
 <title>Melgari AR</title>
 <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-body{margin:0;overflow:hidden;font-family:Arial,sans-serif;}
-#card1,#card2,#card3{display:none;position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:9999;}
-#card1 img{width:90vw;max-width:540px;border-radius:24px;display:block;}
-#card1 button,#card2 button,#card3 button{background:linear-gradient(135deg,#D4AF37,#B8860B);color:#111;border:none;padding:16px 24px;border-radius:12px;font-weight:bold;cursor:pointer;width:100%;}
-#card1 button{margin-top:15px;}
-#card2,#card3{width:90%;max-width:500px;background:#111;color:#fff;padding:30px;border-radius:24px;box-shadow:0 20px 60px rgba(0,0,0,.5);}
-#card2 input{width:100%;padding:14px;margin:10px 0;border:none;border-radius:10px;box-sizing:border-box;}
-#codice{font-size:42px;font-weight:bold;color:#D4AF37;letter-spacing:3px;margin:20px 0;}
+body{margin:0;overflow:hidden;font-family:Arial,sans-serif}
+#card1,#card2,#card3{display:none;position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:9999}
+#card1 img{width:90vw;max-width:540px;border-radius:24px;display:block}
+#card2,#card3{width:90%;max-width:500px;background:#111;color:#fff;padding:30px;border-radius:24px;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+input{width:100%;padding:14px;margin:10px 0;border:none;border-radius:10px;box-sizing:border-box}
+button{background:linear-gradient(135deg,#D4AF37,#B8860B);color:#111;border:none;padding:16px 24px;border-radius:12px;font-weight:bold;cursor:pointer;width:100%;margin-top:10px}
+#codice{font-size:38px;font-weight:bold;color:#D4AF37;letter-spacing:3px}
 </style>
 </head>
 <body>
-
 <div id="card1">
-<img src="Card1.png" alt="Caffe omaggio">
+<img src="Card1.png" alt="Card1">
 <button id="ricevi-codice">RICEVI IL TUO CODICE</button>
 </div>
-
 <div id="card2">
 <h2>☕ Ricevi il tuo caffè omaggio</h2>
-<p>Inserisci i tuoi dati per ottenere il codice personale.</p>
 <input id="nome" type="text" placeholder="Nome">
 <input id="email" type="email" placeholder="E-mail">
-<p><input id="privacy" type="checkbox"> Acconsento al trattamento dei dati personali</p>
+<label><input id="privacy" type="checkbox"> Acconsento al trattamento dati</label>
 <button id="genera-codice">OTTIENI IL CODICE</button>
 </div>
-
 <div id="card3">
 <h2>☕ CAFFÈ OMAGGIO</h2>
-<div id="codice">MEL-CAFE-0000</div>
+<div id="codice"></div>
 <p>Mostra questo codice al bar partner.</p>
 <button id="chiudi">CHIUDI</button>
 </div>
-
 <a-scene mindar-image="imageTargetSrc: targets.mind;" vr-mode-ui="enabled:false" device-orientation-permission-ui="enabled:false">
-<a-camera position="0 0 0" look-controls="enabled:false"></a-camera>
+<a-camera position="0 0 0"></a-camera>
 <a-entity id="target" mindar-image-target="targetIndex:0"></a-entity>
 </a-scene>
-
 <script>
+const supabaseClient = supabase.createClient(
+'https://kqxcdochhnxulbpjvamp.supabase.co',
+'sb_publishable_aGUxyPy0IiCTyRyHXkXoYw_wWjN6VaL'
+);
 const target=document.querySelector('#target');
-
-target.addEventListener('targetFound',()=>{
- document.getElementById('card1').style.display='block';
-});
-
-document.getElementById('ricevi-codice').onclick=()=>{
- document.getElementById('card1').style.display='none';
- document.getElementById('card2').style.display='block';
+target.addEventListener('targetFound',()=>{document.getElementById('card1').style.display='block';});
+document.getElementById('ricevi-codice').onclick=()=>{card1.style.display='none';card2.style.display='block';};
+document.getElementById('genera-codice').onclick=async()=>{
+const nome=document.getElementById('nome').value.trim();
+const email=document.getElementById('email').value.trim();
+if(!nome||!email){alert('Compila tutti i campi');return;}
+const codice='MEL-CAFE-'+Math.random().toString(36).substring(2,8).toUpperCase();
+const {error}=await supabaseClient.from('coupons').insert([{nome,email,codice,usato:false}]);
+if(error){alert('Errore database');console.log(error);return;}
+document.getElementById('codice').innerText=codice;
+card2.style.display='none';card3.style.display='block';
 };
-
-document.getElementById('genera-codice').onclick=()=>{
- const nome=document.getElementById('nome').value.trim();
- const email=document.getElementById('email').value.trim();
- if(!nome||!email){alert('Compila tutti i campi');return;}
- const codice='MEL-CAFE-'+Math.floor(1000+Math.random()*9000);
- document.getElementById('codice').innerText=codice;
- document.getElementById('card2').style.display='none';
- document.getElementById('card3').style.display='block';
-};
-
-document.getElementById('chiudi').onclick=()=>{
- document.getElementById('card3').style.display='none';
-};
+document.getElementById('chiudi').onclick=()=>card3.style.display='none';
 </script>
-</body>
-</html>
+</body></html>
