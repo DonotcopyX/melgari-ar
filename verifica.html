@@ -1,4 +1,76 @@
 <!DOCTYPE html><html lang='it'><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width,initial-scale=1'><title>Verifica</title><script src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2'></script></head><body style='font-family:Arial;background:#111;color:#fff;display:flex;justify-content:center;align-items:center;min-height:100vh'><div id='c'>Verifica...</div><script>
 const s=supabase.createClient('https://kqxcdochhnxulbpjvamp.supabase.co','sb_publishable_aGUxyPy0IiCTyRyHXkXoYw_wWjN6VaL');
-(async()=>{const id=new URLSearchParams(location.search).get('id');const box=document.getElementById('c');const {data,error}=await s.from('Coupons').select('*').eq('id',id).single();if(error||!data){box.innerHTML='❌ COUPON NON VALIDO';return;}if(data.usato){box.innerHTML='🔴 COUPON GIÀ UTILIZZATO';return;}box.innerHTML=`✅ COUPON VALIDO<br><br><button id="ok">CONVALIDA</button>`;document.getElementById('ok').onclick=async()=>{const r=await s.from('Coupons').update({usato:true}).eq('id',id);if(r.error){alert(r.error.message);return;}box.innerHTML='✅ COUPON ACCETTATO';};})();
+(async()=>{const id=new URLSearchParams(location.search).get('id');const box=document.getElementById('c');const {data,error}=await s.from('Coupons').select('*').eq('id',id).single();
+		// legge il plafond
+
+const { data: promo } = await s
+    .from('Promo')
+    .select('*')
+    .eq('id', 1)
+    .single();
+
+// conta i coupon utilizzati
+
+const { count } = await s
+    .from('Coupons')
+    .select('*', {
+        count: 'exact',
+        head: true
+    })
+    .eq('usato', true);
+
+const plafond = promo.plafond;
+const residui = plafond - count;   
+		   
+		   if(data.usato){
+
+    box.innerHTML = `
+        <h1>🔴 COUPON GIÀ UTILIZZATO</h1>
+
+        <p>
+        Erogati: ${count} / ${plafond}
+        </p>
+
+        <p>
+        Residui: ${residui}
+        </p>
+    `;
+
+    return;
+}
+		   
+		   if(count >= plafond){
+
+    box.innerHTML = `
+        <h1>⛔ PROMO TERMINATA</h1>
+
+        <h2>
+        ${count} / ${plafond}
+        </h2>
+
+        <p>
+        Tutti i caffè disponibili sono stati erogati.
+        </p>
+    `;
+
+    return;
+}
+		   
+		  box.innerHTML = `
+
+<h1>✅ COUPON VALIDO</h1>
+
+<p>
+Erogati: ${count} / ${plafond}
+</p>
+
+<p>
+Residui: ${residui}
+</p>
+
+<button id="ok">
+CONVALIDA
+</button>
+
+`;`;document.getElementById('ok').onclick=async()=>{const r=await s.from('Coupons').update({usato:true}).eq('id',id);if(r.error){alert(r.error.message);return;}box.innerHTML='✅ COUPON ACCETTATO';};})();
 </script></body></html>
