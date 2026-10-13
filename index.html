@@ -7,57 +7,31 @@
 <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<style>
-body{margin:0;overflow:hidden;font-family:Arial,sans-serif}
-#card1,#card2,#card3{display:none;position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:9999}
-#card1{text-align:center}
-#card1 img{width:70vw;max-width:380px;max-height:70vh;object-fit:contain;border-radius:24px;display:block;margin:auto}
-#card2,#card3{width:90%;max-width:500px;background:#111;color:#fff;padding:30px;border-radius:24px;box-shadow:0 20px 60px rgba(0,0,0,.5)}
-input{width:100%;padding:14px;margin:10px 0;border:none;border-radius:10px;box-sizing:border-box}
-button{background:linear-gradient(135deg,#D4AF37,#B8860B);color:#111;border:none;padding:16px 24px;border-radius:12px;font-weight:bold;cursor:pointer;width:100%;margin-top:10px}
-#codice{font-size:34px;font-weight:bold;color:#D4AF37;letter-spacing:2px}
-#debug{font-size:12px;color:#ff9999;word-break:break-word;margin-top:12px}
-</style>
-</head>
-<body>
-<div id="card1">
-<img src="Card1.png" alt="Card1">
-<button id="ricevi-codice">RICEVI IL TUO CODICE</button>
-</div>
-<div id="card2">
-<h2>☕ Ricevi il tuo caffè omaggio</h2>
-<input id="nome" type="text" placeholder="Nome">
-<input id="email" type="email" placeholder="E-mail">
-<label><input id="privacy" type="checkbox"> Acconsento al trattamento dati</label>
-<button id="genera-codice">OTTIENI IL CODICE</button>
-<div id="debug"></div>
-</div>
-<div id="card3">
-<h2>☕ CAFFÈ OMAGGIO</h2>
-<div id="codice"></div>
-<p>Mostra questo codice al bar partner.</p>
-<button id="chiudi">CHIUDI</button>
-</div>
-<a-scene mindar-image="imageTargetSrc: targets.mind;" vr-mode-ui="enabled:false" device-orientation-permission-ui="enabled:false">
-<a-camera position="0 0 0"></a-camera>
-<a-entity id="target" mindar-image-target="targetIndex:0"></a-entity>
-</a-scene>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<style>body{margin:0;overflow:hidden;font-family:Arial,sans-serif}#card1,#card2,#card3{display:none;position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:9999}#card1{text-align:center}#card1 img{width:70vw;max-width:380px;max-height:70vh;object-fit:contain;border-radius:24px;display:block;margin:auto}#card2,#card3{width:90%;max-width:500px;background:#111;color:#fff;padding:30px;border-radius:24px;box-shadow:0 20px 60px rgba(0,0,0,.5)}input{width:100%;padding:14px;margin:10px 0;border:none;border-radius:10px;box-sizing:border-box}button{background:linear-gradient(135deg,#D4AF37,#B8860B);color:#111;border:none;padding:16px 24px;border-radius:12px;font-weight:bold;cursor:pointer;width:100%;margin-top:10px}#codice{font-size:34px;font-weight:bold;color:#D4AF37;letter-spacing:2px}#qrcode{text-align:center;margin-top:20px}</style>
+</head><body>
+<div id="card1"><img src="Card1.png"><button id="ricevi-codice">RICEVI IL TUO CODICE</button></div>
+<div id="card2"><h2>☕ Ricevi il tuo caffè omaggio</h2><input id="nome" type="text" placeholder="Nome"><input id="email" type="email" placeholder="E-mail"><label><input id="privacy" type="checkbox"> Acconsento al trattamento dati</label><button id="genera-codice">OTTIENI IL CODICE</button><div id="debug"></div></div>
+<div id="card3"><div id="coupon"><h2>☕ CAFFÈ OMAGGIO</h2><div id="codice"></div><div id="qrcode"></div><p>Mostra questo coupon al bar partner.</p></div><button id="salvaCoupon">SALVA IN GALLERIA</button><button id="chiudi">CHIUDI</button></div>
+<a-scene mindar-image="imageTargetSrc: targets.mind;" vr-mode-ui="enabled:false" device-orientation-permission-ui="enabled:false"><a-camera position="0 0 0"></a-camera><a-entity id="target" mindar-image-target="targetIndex:0"></a-entity></a-scene>
 <script>
 const supabaseClient=supabase.createClient('https://kqxcdochhnxulbpjvamp.supabase.co','sb_publishable_aGUxyPy0IiCTyRyHXkXoYw_wWjN6VaL');
 const target=document.getElementById('target');
-target.addEventListener('targetFound',()=>{document.getElementById('card1').style.display='block';});
-document.getElementById('ricevi-codice').onclick=()=>{document.getElementById('card1').style.display='none';document.getElementById('card2').style.display='block';};
+target.addEventListener('targetFound',()=>document.getElementById('card1').style.display='block');
+document.getElementById('ricevi-codice').onclick=()=>{card1.style.display='none';card2.style.display='block';};
 document.getElementById('genera-codice').onclick=async()=>{
-const nome=document.getElementById('nome').value.trim();
+const nome=nome.value?.trim()||document.getElementById('nome').value.trim();
 const email=document.getElementById('email').value.trim();
-if(!nome||!email){alert('Compila tutti i campi');return;}
+if(!nome||!email)return alert('Compila tutti i campi');
 const codice='MEL-CAFE-'+Math.random().toString(36).substring(2,8).toUpperCase();
-const result=await supabaseClient.from('Coupons').insert([{nome:nome,email:email,codice:codice,usato:false}]);
-if(result.error){document.getElementById('debug').innerText=result.error.message+' | '+(result.error.code||'');return;}
- document.getElementById('codice').innerText=codice;
- document.getElementById('card2').style.display='none';
- document.getElementById('card3').style.display='block';
+const result=await supabaseClient.from('Coupons').insert([{nome,email,codice,usato:false}]).select().single();
+if(result.error){debug.innerText=result.error.message;return;}
+document.getElementById('codice').innerText=codice;
+document.getElementById('qrcode').innerHTML='';
+new QRCode(document.getElementById('qrcode'),{text:'https://donotcopyx.github.io/melgari-ar/verifica.html?id='+result.data.id,width:220,height:220});
+card2.style.display='none';card3.style.display='block';
 };
-document.getElementById('chiudi').onclick=()=>{document.getElementById('card3').style.display='none';};
-</script>
-</body></html>
+document.getElementById('salvaCoupon').onclick=async()=>{const canvas=await html2canvas(document.getElementById('coupon'));const a=document.createElement('a');a.download='coupon-melgari.png';a.href=canvas.toDataURL('image/png');a.click();};
+document.getElementById('chiudi').onclick=()=>card3.style.display='none';
+</script></body></html>
