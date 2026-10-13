@@ -7,7 +7,12 @@ const { data: promo } = await s
     .from('Promo')
     .select('*')
     .eq('id', 1)
-    .single();
+    .single();<br>
+<br>
+if(error || !data){
+    box.innerHTML = '❌ COUPON NON VALIDO';
+    return;
+}
 
 // conta i coupon utilizzati
 
