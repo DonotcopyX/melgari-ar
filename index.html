@@ -121,13 +121,13 @@
     </button>
 
 </div>
-<a-scene mindar-image='imageTargetSrc: targets.mind;' vr-mode-ui='enabled:false'><a-camera></a-camera><a-entity id='target' mindar-image-target='targetIndex:0'></a-entity></a-scene>
+<a-scene device-orientation-permission-ui="enabled:false" mindar-image="imageTargetSrc: targets.mind;" vr-mode-ui="enabled:false"><a-camera></a-camera><a-entity id='target' mindar-image-target='targetIndex:0'></a-entity></a-scene>
 <script>
 const supabaseClient=supabase.createClient('https://kqxcdochhnxulbpjvamp.supabase.co','sb_publishable_aGUxyPy0IiCTyRyHXkXoYw_wWjN6VaL');
 document.getElementById('target').addEventListener('targetFound',()=>{document.getElementById('card1').style.display='block'});
 document.getElementById('ricevi-codice').onclick=()=>{document.getElementById('card1').style.display='none';document.getElementById('card2').style.display='block'};
 document.getElementById('genera-codice').onclick=async()=>{
-	alert('TEST MELGARI');
+	
 	try{const nome=document.getElementById('nome').value.trim();const email=document.getElementById('email').value.trim();if(!nome||!email){alert('Compila tutti i campi');return;}const codice='MEL-CAFE-'+Math.random().toString(36).substring(2,8).toUpperCase();const {data,error}=await supabaseClient.from('Coupons').insert([{nome,email,codice,usato:false}]).select();if(error){alert(error.message);return;}document.getElementById('codice').innerText = codice;
 document.getElementById('clienteNome').innerText = nome;document.getElementById('qrcode').innerHTML='';
 	
