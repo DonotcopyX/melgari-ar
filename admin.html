@@ -43,7 +43,10 @@ const residui=plafond-(erogati||0);
 erogatiEl.textContent=erogati||0;
 residuiEl.textContent=residui;
 generatiEl.textContent=generati||0;
-totale.textContent=((erogati||0)*1.2).toFixed(2);
+const valoreCoupon = promo?.valore_coupon || 1.20;
+
+totale.textContent =
+    ((erogati || 0) * valoreCoupon).toFixed(2);
 const {data}=await db.from('Coupons').select('*').eq('usato',true).order('data_utilizzo',{ascending:false}).limit(50);
 const tbody=document.getElementById('storico');tbody.innerHTML='';
 (data||[]).forEach(r=>tbody.innerHTML+=`<tr><td>${r.data_utilizzo||''}</td><td>${r.nome||''}</td><td>${r.email||''}</td><td>${r.codice||''}</td></tr>`);
