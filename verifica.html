@@ -37,7 +37,26 @@ if(erogati>=plafond){contenuto.innerHTML='<h1 class="err">⛔ PROMO TERMINATA</h
 contenuto.innerHTML='<h1 class="ok">✅ COUPON VALIDO</h1><p>Erogati: '+erogati+' / '+plafond+'</p><p>Residui: '+residui+'</p><button id="convalida">CONVALIDA COUPON</button>';
 document.getElementById('convalida').onclick=async function(){
 const update=await supabaseClient.from('Coupons').update({usato:true}).eq('id',id);
-if(update.error){alert(update.error.message);return;}
+if(update.error){alert(update.error.message);return;}<br>
+await fetch(
+  "https://api.telegram.org/bot8756647199:AAHbBOSd-7cWk1rBogn_ovUaRWyfvBfE3YQ/sendMessage",
+  {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      chat_id: "1041343623",
+      text:
+`☕ Nuovo caffè erogato
+
+Codice: ${codice}
+
+Data: ${new Date().toLocaleString('it-IT')}`
+    })
+  }
+);
+
 contenuto.innerHTML='<h1 class="ok">✅ COUPON ACCETTATO</h1><p>Caffè contabilizzato.</p>';
 };
 }
