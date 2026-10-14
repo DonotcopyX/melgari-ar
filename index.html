@@ -154,8 +154,7 @@ document.getElementById('card3').style.display = 'block';
 
 		   
 		   
-		   
-		   {text:'https://donotcopyx.github.io/melgari-ar/verifica.html?id='+data[0].id,width:260,height:260});document.getElementById('card2').style.display='none';document.getElementById('card3').style.display='block';}catch(e){alert(e.message)}};
+	
 document.getElementById('salvaCoupon').onclick=async()=>{const c=await html2canvas(document.getElementById('coupon'));const a=document.createElement('a');a.download='coupon-melgari.png';a.href=c.toDataURL();a.click();};
 document.getElementById('chiudi').onclick=()=>{document.getElementById('card3').style.display='none'};
 </script></body></html>
