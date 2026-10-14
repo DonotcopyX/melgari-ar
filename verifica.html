@@ -53,10 +53,11 @@ if(update.error){
 
 // invio Telegram
 try{
-
+const oraConvalida = new Date().toLocaleString('it-IT');
+console.log('ORA:', oraConvalida);
     const msg =
 `☕ COUPON CONVALIDATO
-
+Data/Ora: ${oraConvalida}
 ID: ${coupon.id}
 
 Cliente: ${coupon.nome || '-'}
@@ -72,7 +73,7 @@ Residui: ${plafond - (erogati + 1)}
         method:'POST',
         headers:{'Content-Type':'application/json'},
         body:JSON.stringify({
-          chat_id:'1041343623',
+          chat_id:'-5336952040',
           text:msg
         })
       }
