@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Dashboard Melgari Caffè</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase
+<style>
+body{
+    margin:0;
+    font-family:Arial, sans-serif;
+    background:#f4f6f9;
+    color:#333;
+}
+
+header{
+    background:#0f3d75;
+    color:white;
+    padding:20px;
+    text-align:center;
+}
+
+.container{
+    max-width:1200px;
+    margin:auto;
+    padding:20px;
+}
+
+.cards{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:20px;
+    margin-bottom:30px;
+}
+
+.card{
+    background:white;
+    border-radius:12px;
+    padding:20px;
+    box-shadow:0 2px 8px rgba(0,0,0,.1);
+}
+
+.card h3{
+    margin:0;
+    color:#666;
+    font-size:14px;
+}
+
+.card .value{
+    margin-top:10px;
+    font-size:34px;
+    font-weight:bold;
+}
+
+.table-box{
+    background:white;
+    border-radius:12px;
+    padding:20px;
+    box-shadow:0 2px 8px rgba(0,0,0,.1);
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+th{
+    background:#0f3d75;
+    color:white;
+    padding:12px;
+}
+
+td{
+    padding:10px;
+    border-bottom:1px solid #ddd;
+}
+
+.refresh{
+    background:#0f3d75;
+    color:white;
+    border:none;
+    border-radius:8px;
+    padding:12px 20px;
+    cursor:pointer;
+    margin-bottom:20px;
+}
+
+.refresh:hover{
+    background:#174f95;
+}
+
+.used{
+    color:#d62828;
+    font-weight:bold;
+}
+
+.ok{
+    color:#2a9d8f;
+    font-weight:bold;
+}
+
+footer{
+    text-align:center;
+    margin-top:30px;
+    color:#666;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>☕ Dashboard Caffè Melgari</h1>
+</header>
+
+<div class="container">
+
+    <button class="refresh" onclick="loadData()">
+        Aggiorna dati
+    </button>
+
+    <div class="cards">
+
+        <div class="card">
+            <h3>Caffè Erogati</h3>
+            <div class="value" id="erogati">0</div>
+        </div>
+
+        <div class="card">
+            <h3>Caffè Residui</h3>
+            <div class="value" id="residui">0</div>
+        </div>
+
+        <div class="card">
+            <h3>Coupon Generati</h3>
+            <div class="value" id="generati">0</div>
+        </div>
+
+        <div class="card">
+            <h3>Importo da Rimborsare (€)</h3>
+            <div class="value" id="totale">0.00</div>
+        </div>
+
+    </div>
+
+    <div class="table-box">
+
+        <h2>Ultimi Coupon Utilizzati</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Data</th>
+                    <th>Nome</th>
+                    <th>Email</th>
+                    <th>Codice</th>
+                </tr>
+            </thead>
+
+            <tbody id="storico">
+            </tbody>
+        </table>
+
+    </div>
+
+</div>
+
+<footer>
+    Dashboard amministratore Melgari Serramenti
+</footer>
+
+<script>
+
+const SUPABASE_URL = "https://kqxcdochhnxulbpjvamp.supabase.co/rest/v1/";
+const SUPABASE_KEY = "sb_publishable_aGUxyPy0IiCTyRyHXkXoYw_wWjN6VaL";
+
+const supabaseClient = supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
+async function loadData(){
+
+    const { data: promo } = await supabaseClient
+        .from("Promo")
+        .select("*")
+        .limit(1)
+        .single();
+
+    const plafond = promo?.plafond || 100;
+
+    const { count: erogati } = await supabaseClient
+        .from("Coupons")
+        .select("*", { count: "exact", head: true })
+        .eq("usato", true);
+
+    const { count: generati } = await supabaseClient
+        .from("Coupons")
+        .select("*", { count: "exact", head: true });
+
+    const residui = plafond - erogati;
+
+    document.getElementById("erogati").innerText = erogati;
+    document.getElementById("residui").innerText = residui;
+    document.getElementById("generati").innerText = generati;
+
+    // Prezzo medio caffè
+    const prezzoCaffe = 1.20;
+
+    document.getElementById("totale").innerText =
+        (erogati * prezzoCaffe).toFixed(2);
+
+    const { data: storico } = await supabaseClient
+        .from("Coupons")
+        .select("*")
+        .eq("usato", true)
+        .order("data_utilizzo", { ascending:false })
+        .limit(50);
+
+    const tbody = document.getElementById("storico");
+
+    tbody.innerHTML = "";
+
+    storico.forEach(item => {
+
+        const row = `
+            <tr>
+                <td>${item.data_utilizzo || ""}</td>
+                <td>${item.nome || ""}</td>
+                <td>${item.email || ""}</td>
+                <td>${item.codice || ""}</td>
+            </tr>
+        `;
+
+        tbody.innerHTML += row;
+    });
+
+}
+
+loadData();
+
+setInterval(loadData,30000);
+
+</script>
+
+</body>
+</html>
