@@ -30,7 +30,7 @@ if(promoResult.error||!promoResult.data){contenuto.innerHTML='<h1 class="err">‚ù
 const countResult=await supabaseClient.from('Coupons').select('*',{count:'exact',head:true}).eq('usato',true);
 const coupon=couponResult.data;
 
-const coupon=couponResult.data;
+
 console.log(coupon);
 const plafond=promoResult.data.plafond;
 const erogati=countResult.count||0;
