@@ -29,9 +29,14 @@ const promoResult=await supabaseClient.from('Promo').select('*').eq('id',1).sing
 if(promoResult.error||!promoResult.data){contenuto.innerHTML='<h1 class="err">❌ Errore Promo</h1>';return;}
 const countResult=await supabaseClient.from('Coupons').select('*',{count:'exact',head:true}).eq('usato',true);
 const coupon=couponResult.data;
+
+const coupon=couponResult.data;
+console.log(coupon);
 const plafond=promoResult.data.plafond;
 const erogati=countResult.count||0;
 const residui=plafond-erogati;
+	
+	
 if(coupon.usato===true){contenuto.innerHTML='<h1 class="err">🔴 COUPON GIÀ UTILIZZATO</h1><p>Erogati: '+erogati+' / '+plafond+'</p><p>Residui: '+residui+'</p>';return;}
 if(erogati>=plafond){contenuto.innerHTML='<h1 class="err">⛔ PROMO TERMINATA</h1><p>'+erogati+' / '+plafond+'</p>';return;}
 contenuto.innerHTML='<h1 class="ok">✅ COUPON VALIDO</h1><p>Erogati: '+erogati+' / '+plafond+'</p><p>Residui: '+residui+'</p><button id="convalida">CONVALIDA COUPON</button>';
